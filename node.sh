@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# sudo apt-get update
-# sudo apt-get install -y docker.io socat apt-transport-https
-# curl -s -L \
-#   https://storage.googleapis.com/kubeadm/kubernetes-xenial-preview-bundle.txz | tar xJv
-# sudo dpkg -i kubernetes-xenial-preview-bundle/*.deb
-
 sudo su
 
 apt install ebtables ethtool
@@ -19,7 +13,7 @@ cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
 deb http://apt.kubernetes.io/ kubernetes-xenial main
 EOF
 apt-get update
-apt-get install -y kubelet kubeadm kubectl
+apt-get install kubelet kubeadm kubectl -y --allow-unauthenticated
 
 # skip preflight checklist required as per https://github.com/kubernetes/kubernetes/issues/53356
 rm -rf /var/lib/kubelet/pki
