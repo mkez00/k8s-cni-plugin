@@ -20,10 +20,14 @@ sudo kubeadm reset
 # initialize(pod-network-cidr parameter is for Flannel)
 sudo kubeadm init --apiserver-advertise-address=192.168.56.10 --token=b9e6bb.6746bcc9f8ef8267 --pod-network-cidr=10.244.0.0/16
 
-# setup kubectl
+# setup kubectl for root
 sudo mkdir -p /root/.kube
 sudo cp -i /etc/kubernetes/admin.conf /root/.kube/config
-# sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+# setup kubectl for ubuntu user
+sudo mkdir -p /home/ubuntu/.kube
+sudo cp -i /etc/kubernetes/admin.conf /home/ubuntu/.kube/config
+sudo chown ubuntu:ubuntu /home/ubuntu/.kube/config
 
 # Weave Net
 # export kubever=$(kubectl version | base64 | tr -d '\n')

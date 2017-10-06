@@ -141,5 +141,5 @@ func cmdDel(args *skel.CmdArgs) error {
 }
 
 func main() {
-	skel.PluginMain(cmdAdd, cmdDel, version.PluginSupports("", "0.1.0", "0.2.0", version.Current()))
+	skel.PluginMain(cmdAdd, cmdDel, version.PluginSupports(version.Current()))
 }
