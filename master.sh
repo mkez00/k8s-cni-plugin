@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo apt install ebtables ethtool
+sudo apt-get install ebtables ethtool
 
 sudo apt-get update
 sudo apt-get install -y docker.io
@@ -32,3 +32,13 @@ sudo cp -i /etc/kubernetes/admin.conf /root/.kube/config
 # Flannel
 sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.8.0/Documentation/kube-flannel.yml
 sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.8.0/Documentation/kube-flannel-rbac.yml
+
+# Deployment
+# kubectl run kubernetes-bootcamp --image=docker.io/jocatalin/kubernetes-bootcamp:v1 --port=8080
+
+#Expose as service
+# will export to nodes.  So curl http://192.168.56.11:<assigned_port> should return with response
+# kubectl expose deployment/kubernetes-bootcamp --type="NodePort" --port 8080
+
+# Scaled
+# kubectl scale deployments/kubernetes-bootcamp --replicas=3

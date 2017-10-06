@@ -2,7 +2,7 @@
 
 sudo su
 
-apt install ebtables ethtool
+apt-get install ebtables ethtool
 
 apt-get update
 apt-get install -y docker.io
