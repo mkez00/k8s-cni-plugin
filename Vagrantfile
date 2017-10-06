@@ -34,4 +34,9 @@ Vagrant.configure("2") do |config|
  #    c.vm.network "private_network", ip: "192.168.56.13"
  #  end
 
+  # This shell script provisions pods and configures service
+  config.vm.define "master" do |c|
+    c.vm.provision "shell", run: "once", path: "master-2.sh"
+  end
+
  end
