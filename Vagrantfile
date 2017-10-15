@@ -2,9 +2,6 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  # config.vm.box = "ubuntu/xenial64"
-  # config.vm.hostname = "master"
-  # config.vm.provision "shell", run: "once", path: "master.sh"
 
   config.vm.define "master" do |c|
 	  c.vm.box = "ubuntu/xenial64"
@@ -46,12 +43,6 @@ EOF
       sudo cp -i /etc/kubernetes/admin.conf /home/ubuntu/.kube/config
       sudo chown ubuntu:ubuntu /home/ubuntu/.kube/config
 
-      # Custom CNI (not working)
-      # sudo kubectl apply -f /data/strong-swan.yml
-
-      # Flannel
-      # sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.8.0/Documentation/kube-flannel.yml
-      # sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.8.0/Documentation/kube-flannel-rbac.yml
 
       # Deployment
       sudo kubectl run kubernetes-bootcamp --image=docker.io/jocatalin/kubernetes-bootcamp:v1 --port=8080
@@ -59,9 +50,6 @@ EOF
       #Expose as service
       # will export to nodes.  So curl http://192.168.56.11:<assigned_port> should return with response
       sudo kubectl expose deployment/kubernetes-bootcamp --type="NodePort" --port 8080
-
-      # Scaled
-      # sudo kubectl scale deployments/kubernetes-bootcamp --replicas=9
 
     SHELL
   end
@@ -159,11 +147,50 @@ EOF
     SHELL
   end
 
- #  config.vm.define "node3" do |c|
-	# c.vm.box = "ubuntu/xenial64"
- #    c.vm.provision "shell", run: "once", path: "node.sh"
- #    c.vm.hostname = 'node-3'
- #    c.vm.network "private_network", ip: "192.168.56.13"
- #  end
+  config.vm.define "node3" do |c|
+	c.vm.box = "ubuntu/xenial64"
+    c.vm.hostname = 'node-3'
+    c.vm.synced_folder "data", "/data"
+    c.vm.network "private_network", ip: "192.168.56.13"
+    c.vm.provision "shell", inline: <<-SHELL
+
+      sudo su
+
+      apt-get install ebtables ethtool
+
+      apt-get update
+      apt-get install -y docker.io
+
+      apt-get update && apt-get install -y apt-transport-https
+      curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+      cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
+deb http://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+      apt-get update
+      apt-get install kubelet kubeadm kubectl -y --allow-unauthenticated
+
+      # skip preflight checklist required as per https://github.com/kubernetes/kubernetes/issues/53356
+      rm -rf /var/lib/kubelet/pki
+      kubeadm reset
+
+      # make directory for CNI config
+      sudo mkdir -p /etc/cni/net.d
+      # provide cni config (does not copy to nodes)
+      sudo cp -f /data/node3/10-bridge.conf /etc/cni/net.d/
+
+      kubeadm join --token b9e6bb.6746bcc9f8ef8267 192.168.56.10:6443
+
+      # install strongswan and configure nodes
+      apt-get install strongswan -y
+      cp -f /data/node3/ipsec.conf /etc/ipsec.conf
+      cp -f /data/node3/ipsec.secrets /etc/ipsec.secrets
+      cp -f /data/node3/strongswan.conf /etc/strongswan.conf
+
+      # apply the changes by restarting strongswan service
+      systemctl restart strongswan.service
+      ipsec restart
+
+    SHELL
+  end
 
  end
