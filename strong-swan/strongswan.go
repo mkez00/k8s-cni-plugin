@@ -21,6 +21,8 @@ import (
 	"github.com/containernetworking/cni/pkg/skel"
 	"github.com/containernetworking/cni/pkg/version"
 	"os/exec"
+	"log"
+	"log/syslog"
 )
 
 type NetConfig struct {
@@ -53,22 +55,34 @@ func loadConf(bytes []byte) (*NetConfig, error) {
 }
 
 func cmdAdd(args *skel.CmdArgs) error {
-	return restartStrongSwanAndConnect()
+	log.Println("StrongSwan CNI Plugin Add")
+	err := restartStrongSwanAndConnect()
+	if (err!=nil){
+		log.Println(err.Error())
+	}
+	log.Println("StrongSwan CNI Plugin Add Complete")
+	return err
 }
 
 func restartStrongSwanAndConnect() error{
+	log.Println("Starting restart")
 	err := run(exec.Command("ipsec","restart"))
 	if (err!=nil) {
 		return err
 	}
+	log.Println("Restarted")
+	log.Println("Starting leftNode")
 	run(exec.Command("ipsec","up", "leftNode"))
 	if (err!=nil) {
 		return err
 	}
+	log.Println("Started leftNode")
+	log.Println("Starting rightNode")
 	run(exec.Command("ipsec","up", "rightNode"))
 	if (err!=nil) {
 		return err
 	}
+	log.Println("Started rightNode")
 	return nil
 }
 
@@ -85,5 +99,11 @@ func cmdDel(args *skel.CmdArgs) error {
 }
 
 func main() {
+
+	logwriter, e := syslog.New(syslog.LOG_NOTICE, "strong-swan")
+	if e == nil {
+		log.SetOutput(logwriter)
+	}
+
 	skel.PluginMain(cmdAdd, cmdDel, version.All)
 }

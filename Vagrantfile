@@ -29,9 +29,9 @@ EOF
       # make directory for CNI config
       sudo mkdir -p /etc/cni/net.d
       # provide cni config (does not copy to nodes)
-      sudo cp -f /data/10-bridge.conf /etc/cni/net.d/
+      # sudo cp -f /data/10-bridge.conf /etc/cni/net.d/
 
-      # initialize(pod-network-cidr parameter is for Flannel --pod-network-cidr=10.244.0.0/16)
+      # initialize
       sudo kubeadm init --apiserver-advertise-address=192.168.56.10 --token=b9e6bb.6746bcc9f8ef8267 
 
       # setup kubectl for root
@@ -97,9 +97,15 @@ EOF
       # apply the changes by restarting strongswan service
       #systemctl restart strongswan.service
       #ipsec restart
+      ipsec stop
 
       # copy CNI plugin to dir
       cp -f  /data/strong-swan /opt/cni/bin
+      chmod 0755 /opt/cni/bin/strong-swan
+
+      # backup script
+      cp -f /data/strong-swan-start.sh /opt/
+      chmod 0700 /opt/strong-swan-start.sh
 
     SHELL
 
@@ -148,9 +154,15 @@ EOF
       # apply the changes by restarting strongswan service
       #systemctl restart strongswan.service
       #ipsec restart
+      ipsec stop
 
       # copy CNI plugin to dir
       cp -f  /data/strong-swan /opt/cni/bin
+      chmod 0755 /opt/cni/bin/strong-swan
+
+      # backup script
+      cp -f /data/strong-swan-start.sh /opt/
+      chmod 0700 /opt/strong-swan-start.sh
 
     SHELL
   end
@@ -198,9 +210,15 @@ EOF
       # apply the changes by restarting strongswan service
       #systemctl restart strongswan.service
       #ipsec restart
+      ipsec stop
 
       # copy CNI plugin to dir
       cp -f  /data/strong-swan /opt/cni/bin
+      chmod 0755 /opt/cni/bin/strong-swan
+
+      # backup script
+      cp -f /data/strong-swan-start.sh /opt/
+      chmod 0700 /opt/strong-swan-start.sh
 
     SHELL
   end
