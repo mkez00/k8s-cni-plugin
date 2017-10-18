@@ -49,7 +49,7 @@ EOF
 
       #Expose as service
       # will export to nodes.  So curl http://192.168.56.11:<assigned_port> should return with response
-      sudo kubectl expose deployment/kubernetes-bootcamp --type="NodePort" --port 8080
+      # sudo kubectl expose deployment/kubernetes-bootcamp --type="NodePort" --port 8080
 
     SHELL
   end
@@ -84,6 +84,7 @@ EOF
       mkdir -p /etc/cni/net.d
       # provide cni config (does not copy to nodes)
       cp -f /data/node1/10-bridge.conf /etc/cni/net.d/
+      cp -f /data/node1/20-sswan.conf /etc/cni/net.d/
 
       kubeadm join --token b9e6bb.6746bcc9f8ef8267 192.168.56.10:6443
 
@@ -94,8 +95,11 @@ EOF
       cp -f /data/node1/strongswan.conf /etc/strongswan.conf
 
       # apply the changes by restarting strongswan service
-      systemctl restart strongswan.service
-      ipsec restart
+      #systemctl restart strongswan.service
+      #ipsec restart
+
+      # copy CNI plugin to dir
+      cp -f  /data/strong-swan /opt/cni/bin
 
     SHELL
 
@@ -131,6 +135,7 @@ EOF
       sudo mkdir -p /etc/cni/net.d
       # provide cni config (does not copy to nodes)
       sudo cp -f /data/node2/10-bridge.conf /etc/cni/net.d/
+      sudo cp -f /data/node2/20-sswan.conf /etc/cni/net.d/
 
       kubeadm join --token b9e6bb.6746bcc9f8ef8267 192.168.56.10:6443
 
@@ -141,8 +146,11 @@ EOF
       cp -f /data/node2/strongswan.conf /etc/strongswan.conf
 
       # apply the changes by restarting strongswan service
-      systemctl restart strongswan.service
-      ipsec restart
+      #systemctl restart strongswan.service
+      #ipsec restart
+
+      # copy CNI plugin to dir
+      cp -f  /data/strong-swan /opt/cni/bin
 
     SHELL
   end
@@ -177,6 +185,7 @@ EOF
       sudo mkdir -p /etc/cni/net.d
       # provide cni config (does not copy to nodes)
       sudo cp -f /data/node3/10-bridge.conf /etc/cni/net.d/
+      sudo cp -f /data/node3/20-sswan.conf /etc/cni/net.d/
 
       kubeadm join --token b9e6bb.6746bcc9f8ef8267 192.168.56.10:6443
 
@@ -187,8 +196,11 @@ EOF
       cp -f /data/node3/strongswan.conf /etc/strongswan.conf
 
       # apply the changes by restarting strongswan service
-      systemctl restart strongswan.service
-      ipsec restart
+      #systemctl restart strongswan.service
+      #ipsec restart
+
+      # copy CNI plugin to dir
+      cp -f  /data/strong-swan /opt/cni/bin
 
     SHELL
   end

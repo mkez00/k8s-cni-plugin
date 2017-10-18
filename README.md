@@ -10,3 +10,7 @@ After vagrant up.  Need to do the following:
 5) Get IP of container on node2: ip addr OR get it from master using sudo kubectl describe pods <POD_NAME>
 6) Ping IP of container on node2 from container on node1: ping <CONTAINER_IP>
 7) Watch traffic on interface created by CNI plugin on node2: sudo tcpdump -i cni0
+
+Build strong-swan binary
+
+GOOS=linux GOARCH=amd64 go build -o strong-swan

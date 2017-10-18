@@ -15,24 +15,26 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net"
-	"path/filepath"
 	"runtime"
-	"strings"
-
 	"github.com/containernetworking/cni/pkg/skel"
 	"github.com/containernetworking/cni/pkg/version"
-	"github.com/containernetworking/plugins/pkg/ns"
-	"github.com/containernetworking/cni/pkg/types"
-	"github.com/vishvananda/netlink"
+	"os/exec"
 )
 
 type NetConfig struct {
-	NetworkInterface string `json:networkInterface` //interface name: ie. enp0s3
+	Left Connection `json:left`
+	Right Connection `json:right`
+}
+
+type Connection struct {
+	Left string `json:left`
+	LeftSubnet string `json:leftSubnet`
+	LeftFirewall string `json:leftFirewall`
+	Right string `json:right`
+	RightSubnet string `json:rightSubnet`
+	Auto string `json:auto`
 }
 
 func init() {
@@ -47,33 +49,39 @@ func loadConf(bytes []byte) (*NetConfig, error) {
 	if err := json.Unmarshal(bytes, n); err != nil {
 		return nil, fmt.Errorf("failed to load netconf: %v", err)
 	}
-	if n.NetworkInterface == "" {
-		return nil, fmt.Errorf(`Network interface required"`)
-	}
 	return n, nil
 }
 
 func cmdAdd(args *skel.CmdArgs) error {
-	//cfg, err := loadConf(args.StdinData)
-	//if err != nil {
-	//	return err
-	//}
-	//lo, _ := netlink.LinkByName(cfg.NetworkInterface)
-	//addr, _ := netlink.ParseAddr("169.254.169.154/32")
-	//
-	//return netlink.AddrAdd(lo, addr)
+	return restartStrongSwanAndConnect()
+}
 
-	for idx, rangeset := range ipamConf.Ranges {
-
+func restartStrongSwanAndConnect() error{
+	err := run(exec.Command("ipsec","restart"))
+	if (err!=nil) {
+		return err
 	}
+	run(exec.Command("ipsec","up", "leftNode"))
+	if (err!=nil) {
+		return err
+	}
+	run(exec.Command("ipsec","up", "rightNode"))
+	if (err!=nil) {
+		return err
+	}
+	return nil
+}
 
+func run(cmd *exec.Cmd) error{
+	err := cmd.Run()
+	if (err!=nil){
+		return err
+	}
 	return nil
 }
 
 func cmdDel(args *skel.CmdArgs) error {
-	lo, _ := netlink.LinkByName("enp0s3")
-	addr, _ := netlink.ParseAddr("169.254.169.154/32")
-	return netlink.AddrDel(lo,addr)
+	return nil
 }
 
 func main() {
