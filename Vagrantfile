@@ -70,14 +70,14 @@ EOF
       rm -rf /var/lib/kubelet/pki
       kubeadm reset
 
-      # make directory for CNI config
+      # make directory for CNI configurations and copy config file
       mkdir -p /etc/cni/net.d
-      # provide cni config (does not copy to nodes)
       cp -f /data/node1/10-bridge.conf /etc/cni/net.d/
 
+      # join node to cluster
       kubeadm join --token b9e6bb.6746bcc9f8ef8267 192.168.56.10:6443
 
-      # install strongswan and configure nodes
+      # install strongswan and configure connections
       apt-get install strongswan -y
       cp -f /data/node1/ipsec.conf /etc/ipsec.conf
       cp -f /data/node1/ipsec.secrets /etc/ipsec.secrets
@@ -117,14 +117,14 @@ EOF
       rm -rf /var/lib/kubelet/pki
       kubeadm reset
 
-      # make directory for CNI config
-      sudo mkdir -p /etc/cni/net.d
-      # provide cni config (does not copy to nodes)
-      sudo cp -f /data/node2/10-bridge.conf /etc/cni/net.d/
+      # make directory for CNI configurations and copy config file
+      mkdir -p /etc/cni/net.d
+      cp -f /data/node2/10-bridge.conf /etc/cni/net.d/
 
+      # join node to cluster
       kubeadm join --token b9e6bb.6746bcc9f8ef8267 192.168.56.10:6443
 
-      # install strongswan and configure nodes
+      # install strongswan and configure connections
       apt-get install strongswan -y
       cp -f /data/node2/ipsec.conf /etc/ipsec.conf
       cp -f /data/node2/ipsec.secrets /etc/ipsec.secrets
@@ -163,14 +163,14 @@ EOF
       rm -rf /var/lib/kubelet/pki
       kubeadm reset
 
-      # make directory for CNI config
-      sudo mkdir -p /etc/cni/net.d
-      # provide cni config (does not copy to nodes)
-      sudo cp -f /data/node3/10-bridge.conf /etc/cni/net.d/
+      # make directory for CNI configurations and copy config file
+      mkdir -p /etc/cni/net.d
+      cp -f /data/node3/10-bridge.conf /etc/cni/net.d/
 
+      # join node to cluster
       kubeadm join --token b9e6bb.6746bcc9f8ef8267 192.168.56.10:6443
 
-      # install strongswan and configure nodes
+      # install strongswan and configure connections
       apt-get install strongswan -y
       cp -f /data/node3/ipsec.conf /etc/ipsec.conf
       cp -f /data/node3/ipsec.secrets /etc/ipsec.secrets
