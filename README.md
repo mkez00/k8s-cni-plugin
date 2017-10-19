@@ -1,6 +1,8 @@
 # k8s-cni-plugin
 
-After vagrant up.  Need to do the following:
+Demonstrate the use of StrongSwan based IPSec in a 3 node Kubernetes cluster.  Each node uses bridge + host-local CNI.
+
+After vagrant up.  Demonstrate connectivity by doing the following:
 
 1) Scale number of pods (master): sudo kubectl scale deployments/kubernetes-bootcamp --replicas=9
 2) Run StrongSwan startup script on each node (node1, node2, node3): sudo /opt/strong-swan-start.sh
@@ -10,6 +12,3 @@ After vagrant up.  Need to do the following:
 6) Ping IP of container on node2 from container on node1: ping <CONTAINER_IP>
 7) Watch traffic on interface created by CNI plugin on node2: sudo tcpdump -i cni0
 8) Stop ipsec on any node to sever link between hosts: sudo ipsec stop
-
-Build strong-swan binary:
-GOOS=linux GOARCH=amd64 go build -o strong-swan 
